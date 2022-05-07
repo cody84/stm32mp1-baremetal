@@ -4,6 +4,11 @@ This project runs on the STM32MP157C-DK2 and demostrates double buffering and 3 
 
 To use, first make sure u-boot is installed on an SD-card, as usual (see README in the project root directory). 
 
+Clone the LVGL library to this directory. This project was built and tested on the release/v8.2 branch and is recommend for this project. 
+```
+git clone https://github.com/lvgl/lvgl.git --branch release/v8.2
+```
+
 Choose the display orientation, method to transfer pixel data to framebuffer, and a demo or one of the many examples found in lvgl/examples/ 
 To configure the display in portrait set:
 	#define H_RES 480
