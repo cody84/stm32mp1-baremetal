@@ -6,6 +6,7 @@ To use, first make sure u-boot is installed on an SD-card, as usual (see README 
 
 Clone the LVGL library to this directory. This project was built and tested on the release/v8.2 branch and is recommend for this project. 
 ```
+cd [path to this directory]
 git clone https://github.com/lvgl/lvgl.git --branch release/v8.2
 ```
 
