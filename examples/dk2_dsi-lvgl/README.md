@@ -10,23 +10,23 @@ cd [path to this directory]
 git clone https://github.com/lvgl/lvgl.git --branch release/v8.2
 ```
 
-Choose the display orientation, method to transfer pixel data to framebuffer, and a demo or one of the many examples found in lvgl/examples/ 
-To configure the display in portrait set:
-	#define H_RES 480
-	#define V_RES 800
-*** Note: In landscape you may notice a diagonal tearing line. This is because we exchange the row and column on the frame memory, but the display is still refreshed as 480x800. ***
-To configure the display in landscape set:
-	#define H_RES 800
-	#define V_RES 480
+Choose the display orientation, method to transfer pixel data to framebuffer, and a demo or one of the many examples found in lvgl/examples/  
+To configure the display in portrait set:  
+`#define H_RES 480`  
+`#define V_RES 800`  
+*** Note: In landscape you may notice a diagonal tearing line. This is because we exchange the row and column on the frame memory, but the display is still refreshed as 480x800. ***  
+To configure the display in landscape set:  
+`#define H_RES 800`  
+`#define V_RES 480`  
 
-To use 2 full screen size buffers and swap buffers when screen is updated set:
-	#define DOUBLE_BUFFER 1
-To transfer a buffer of changed pixels using MDMA set:
-	#define MDMA_PIXEL_XFER 1
-To transfer a buffer of changed pixels using DMA set:
-	#define DMA_PIXEL_XFER 1
-To transfer a buffer of changed pixels using CPU (write pixel by pixel) set:
-	#define CPU_PIXEL_XFER 1
+To use 2 full screen size buffers and swap buffers when screen is updated set:  
+`#define DOUBLE_BUFFER 1`  
+To transfer a buffer of changed pixels using MDMA set:  
+`#define MDMA_PIXEL_XFER 1`  
+To transfer a buffer of changed pixels using DMA set:  
+`#define DMA_PIXEL_XFER 1`  
+To transfer a buffer of changed pixels using CPU (write pixel by pixel) set:  
+`#define CPU_PIXEL_XFER 1`  
 	
 Select one of the demos listed in main.c and set necessary variables or chose one of the examples from lvgl/examples/ 
 
