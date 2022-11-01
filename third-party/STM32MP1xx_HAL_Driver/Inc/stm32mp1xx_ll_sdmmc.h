@@ -233,6 +233,11 @@ typedef struct
 #define SDMMC_CMD_SDMMC_RW_EXTENDED                   ((uint8_t)53U)  /*!< For SD I/O card only, reserved for security specification.                                 */
 
 /** 
+  * @brief Following commands are MMC Specific commands.
+  */
+#define SDMMC_CMD_MMC_SLEEP_AWAKE                     ((uint8_t)5U)   /*!< Toggle the device between Sleep state and Standby state.                                 */
+
+/**
   * @brief Following commands are SD Card Specific security commands.
   *        SDMMC_CMD_APP_CMD should be sent before sending these commands. 
   */
@@ -352,6 +357,25 @@ typedef struct
 #define IS_SDMMC_BUS_WIDE(WIDE) (((WIDE) == SDMMC_BUS_WIDE_1B) || \
                                 ((WIDE) == SDMMC_BUS_WIDE_4B) || \
                                 ((WIDE) == SDMMC_BUS_WIDE_8B))
+/**
+  * @}
+  */
+
+/** @defgroup SDMMC_LL_Speed_Mode
+  * @{
+  */
+#define SDMMC_SPEED_MODE_AUTO                  ((uint32_t)0x00000000U)
+#define SDMMC_SPEED_MODE_DEFAULT               ((uint32_t)0x00000001U)
+#define SDMMC_SPEED_MODE_HIGH                  ((uint32_t)0x00000002U)
+#define SDMMC_SPEED_MODE_ULTRA                 ((uint32_t)0x00000003U)
+#define SDMMC_SPEED_MODE_DDR                   ((uint32_t)0x00000004U)
+
+#define IS_SDMMC_SPEED_MODE(MODE) (((MODE) == SDMMC_SPEED_MODE_AUTO)    || \
+                                   ((MODE) == SDMMC_SPEED_MODE_DEFAULT) || \
+                                   ((MODE) == SDMMC_SPEED_MODE_HIGH)    || \
+                                   ((MODE) == SDMMC_SPEED_MODE_ULTRA)   || \
+                                   ((MODE) == SDMMC_SPEED_MODE_DDR))
+
 /**
   * @}
   */
@@ -645,7 +669,9 @@ typedef struct
 /* CLKCR register clear mask */ 
 #define CLKCR_CLEAR_MASK         ((uint32_t)(SDMMC_CLKCR_CLKDIV  | SDMMC_CLKCR_PWRSAV |\
                                              SDMMC_CLKCR_WIDBUS |\
-                                             SDMMC_CLKCR_NEGEDGE | SDMMC_CLKCR_HWFC_EN))
+                                             SDMMC_CLKCR_NEGEDGE | SDMMC_CLKCR_HWFC_EN |\
+                                             SDMMC_CLKCR_DDR | SDMMC_CLKCR_BUSSPEED |\
+                                             SDMMC_CLKCR_SELCLKRX))
 
 /* --- DCTRL Register ---*/
 /* SDMMC DCTRL Clear Mask */
@@ -1022,7 +1048,7 @@ uint32_t SDMMC_CmdEraseStartAdd(SDMMC_TypeDef *SDMMCx, uint32_t StartAdd);
 uint32_t SDMMC_CmdSDEraseStartAdd(SDMMC_TypeDef *SDMMCx, uint32_t StartAdd);
 uint32_t SDMMC_CmdEraseEndAdd(SDMMC_TypeDef *SDMMCx, uint32_t EndAdd);
 uint32_t SDMMC_CmdSDEraseEndAdd(SDMMC_TypeDef *SDMMCx, uint32_t EndAdd);
-uint32_t SDMMC_CmdErase(SDMMC_TypeDef *SDMMCx);
+uint32_t SDMMC_CmdErase(SDMMC_TypeDef *SDMMCx, uint32_t EraseType);
 uint32_t SDMMC_CmdStopTransfer(SDMMC_TypeDef *SDMMCx);
 uint32_t SDMMC_CmdSelDesel(SDMMC_TypeDef *SDMMCx, uint64_t Addr);
 uint32_t SDMMC_CmdGoIdleState(SDMMC_TypeDef *SDMMCx);
@@ -1034,6 +1060,8 @@ uint32_t SDMMC_CmdSendSCR(SDMMC_TypeDef *SDMMCx);
 uint32_t SDMMC_CmdSendCID(SDMMC_TypeDef *SDMMCx);
 uint32_t SDMMC_CmdSendCSD(SDMMC_TypeDef *SDMMCx, uint32_t Argument);
 uint32_t SDMMC_CmdSetRelAdd(SDMMC_TypeDef *SDMMCx, uint16_t *pRCA);
+uint32_t SDMMC_CmdSetRelAddMmc(SDMMC_TypeDef *SDMMCx, uint16_t RCA);
+uint32_t SDMMC_CmdSleepMmc(SDMMC_TypeDef *SDMMCx, uint32_t Argument);
 uint32_t SDMMC_CmdSendStatus(SDMMC_TypeDef *SDMMCx, uint32_t Argument);
 uint32_t SDMMC_CmdStatusRegister(SDMMC_TypeDef *SDMMCx);
 uint32_t SDMMC_CmdVoltageSwitch(SDMMC_TypeDef *SDMMCx);
@@ -1041,6 +1069,15 @@ uint32_t SDMMC_CmdOpCondition(SDMMC_TypeDef *SDMMCx, uint32_t Argument);
 uint32_t SDMMC_CmdSwitch(SDMMC_TypeDef *SDMMCx, uint32_t Argument);
 uint32_t SDMMC_CmdSendEXTCSD(SDMMC_TypeDef *SDMMCx, uint32_t Argument);
 
+/* SDMMC Responses management functions *****************************************/
+/** @addtogroup HAL_SDMMC_LL_Group5
+  * @{
+  */
+uint32_t SDMMC_GetCmdResp1(SDMMC_TypeDef *SDMMCx, uint8_t SD_CMD, uint32_t Timeout);
+uint32_t SDMMC_GetCmdResp2(SDMMC_TypeDef *SDMMCx);
+uint32_t SDMMC_GetCmdResp3(SDMMC_TypeDef *SDMMCx);
+uint32_t SDMMC_GetCmdResp6(SDMMC_TypeDef *SDMMCx, uint8_t SD_CMD, uint16_t *pRCA);
+uint32_t SDMMC_GetCmdResp7(SDMMC_TypeDef *SDMMCx);
 /**
   * @}
   */

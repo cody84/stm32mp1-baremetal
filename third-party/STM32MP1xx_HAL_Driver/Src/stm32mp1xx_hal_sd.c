@@ -1465,7 +1465,7 @@ HAL_StatusTypeDef HAL_SD_Erase(SD_HandleTypeDef *hsd, uint32_t BlockStartAdd, ui
     }
     
     /* Send CMD38 ERASE */
-    errorstate = SDMMC_CmdErase(hsd->Instance);
+    errorstate = SDMMC_CmdErase(hsd->Instance, 0U);
     if(errorstate != HAL_SD_ERROR_NONE)
     {
       /* Clear all the static flags */
