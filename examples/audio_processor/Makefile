@@ -4,7 +4,7 @@ BUILDDIR = build
 OPTFLAG = -O3
 
 EXTLIBDIR = ../../third-party
-SHAREDDIR = ../shared
+SHAREDDIR = ../../shared
 STM32HALDIR = $(EXTLIBDIR)/STM32MP1xx_HAL_Driver
 mdrivlibdir = lib/mdrivlib
 
@@ -12,14 +12,14 @@ SOURCES = main.cc \
 		  mmu_ca7.c \
 		  startup.s \
 		  lib/util/math_tables.cc \
-		  $(mdrivlibdir)/drivers/i2c.cc \
-		  $(mdrivlibdir)/drivers/pin.cc \
-		  $(mdrivlibdir)/drivers/codec_CS42L51.cc \
-		  $(mdrivlibdir)/target/stm32mp1/drivers/sai_tdm.cc \
-		  $(mdrivlibdir)/target/stm32mp1_ca7/drivers/cycle_counter.cc \
-		  $(mdrivlibdir)/target/stm32mp1_ca7/drivers/hal_handlers.cc \
-		  $(mdrivlibdir)/target/stm32mp1_ca7/drivers/interrupt_handler.cc \
-		  $(mdrivlibdir)/target/stm32mp1_ca7/boot/irq_ctrl.c \
+		  drv/i2c.cc \
+		  drv/pin.cc \
+		  drv/codec_CS42L51.cc \
+		  drv/sai_tdm.cc \
+		  drv/cycle_counter.cc \
+		  drv/hal_handlers.cc \
+		  drv/interrupt_handler.cc \
+		  drv/irq_ctrl.c \
 		  $(SHAREDDIR)/system/system_ca7.c \
 		  $(SHAREDDIR)/system/libc_stub.c \
 		  $(SHAREDDIR)/system/libcpp_stub.cc \
@@ -43,22 +43,15 @@ INCLUDES = -I. \
 		   -I.. \
 		   -Ilib \
 		   -Iutil \
-		   -I$(mdrivlibdir) \
-		   -I$(mdrivlibdir)/drivers \
-		   -I$(mdrivlibdir)/target/stm32mp1 \
-		   -I$(mdrivlibdir)/target/stm32mp1_ca7 \
-		   -I$(mdrivlibdir)/target/stm32mp1/drivers \
-		   -I$(mdrivlibdir)/target/stm32mp1_ca7/boot \
-		   -I$(mdrivlibdir)/target/stm32mp1_ca7/drivers \
+		   -Idrv \
+		   -I$(SHAREDDIR) \
+		   -I$(SHAREDDIR)/drivers \
 		   -I$(STM32HALDIR)/Inc \
 		   -I$(EXTLIBDIR)/gcem/include \
 		   -I$(EXTLIBDIR)/CMSIS/Core_A/Include \
 		   -I$(EXTLIBDIR)/CMSIS/Device/ST/STM32MP1xx/Include \
 		   -I$(EXTLIBDIR)/DaisySP/Source \
 		   -I$(EXTLIBDIR)/DaisySP/Source/Utility \
-		   
-# Do not include ../shared for this project, because of conflict between ../shared/drivers/ and lib/mdrivlib/drivers/
-		   # -I$(SHAREDDIR) \
 
 EXTRACFLAGS = -DUSE_HAL_DRIVER \
 			  -DUSE_FULL_LL_DRIVER \
@@ -76,5 +69,5 @@ EXTRACFLAGS = -DUSE_HAL_DRIVER \
 EXTRACXXFLAGS =  \
 
 
-include ../shared/makefile-common.mk
+include $(SHAREDDIR)/makefile-common.mk
 

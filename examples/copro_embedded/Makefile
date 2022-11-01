@@ -4,7 +4,7 @@ export BINARYNAME = main
 export BUILDDIR_A7 = build/corea7
 export BUILDDIR_M4 = build/corem4
 export EXTLIBDIR = ../../third-party
-export SHAREDDIR = ../shared
+export SHAREDDIR = ../../shared
 
 # This compiles and links the m4 firmware to an .elf file,
 # then splits up and re-combines the sections based on contigious memory blocks,
@@ -36,6 +36,9 @@ $(BUILDDIR_M4)/firmware.bin: $(BUILDDIR_M4)/$(BINARYNAME).elf
 
 install:
 	@$(MAKE) --no-print-directory -f makefile_mp1a7.mk install
+
+install-mp1-boot:
+	@$(MAKE) --no-print-directory -f makefile_mp1a7.mk install-mp1-boot
 
 clean:
 	rm -rf $(BUILDDIR_A7)

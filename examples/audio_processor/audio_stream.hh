@@ -1,10 +1,11 @@
 #pragma once
 #include "audio_codec_conf.hh"
 #include "audio_stream_conf.hh"
-#include "drivers/cache.hh"
-#include "drivers/codec_CS42L51.hh"
-#include "drivers/cycle_counter.hh"
-#include "drivers/i2c.hh"
+#include "drv/cache.hh"
+#include "drv/codec_CS42L51.hh"
+#include "drv/cycle_counter.hh"
+#include "drv/i2c.hh"
+#include "rcc_conf.hh"
 
 using AudioInBuffer = AudioStreamConf::AudioInBuffer;
 using AudioOutBuffer = AudioStreamConf::AudioOutBuffer;
@@ -29,6 +30,9 @@ public:
 		: i2c{i2c_conf}
 		, codec{i2c, sai_conf}
 	{
+		// Setup clocks needed for codec
+		HAL_RCCEx_PeriphCLKConfig(&rcc_periph_clk_conf);
+
 		codec.init();
 		codec.set_rx_buffers(audio_in_dma_block[0]);
 		codec.set_tx_buffers(audio_out_dma_block[0]);
