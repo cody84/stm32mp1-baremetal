@@ -2154,7 +2154,7 @@ typedef struct
   __IO uint32_t IDMABAR;        /*!< SDMMC DMA linked list memory base register, Address offset: 0x68 */
   uint32_t      RESERVED2[5];   /*!< Reserved, 0x6C-0x7C                                            */
   __IO uint32_t FIFO;           /*!< SDMMC data FIFO register,               Address offset: 0x80 - 0xBC */
-  uint32_t      RESERVED3[220]; /*!< Reserved, 0xBC-0x3F4                                           */
+  uint32_t      RESERVED3[220]; /*!< Reserved, 0xC0-0x3F4                                           */
   __IO uint32_t VERR;           /*!< SDMMC version register,                  Address offset: 0x3F4 */
   __IO uint32_t IPIDR;           /*!< SDMMC identification register,          Address offset: 0x3F8 */
   __IO uint32_t SIDR;           /*!< SDMMCsize ID register,                   Address offset: 0x3FC */

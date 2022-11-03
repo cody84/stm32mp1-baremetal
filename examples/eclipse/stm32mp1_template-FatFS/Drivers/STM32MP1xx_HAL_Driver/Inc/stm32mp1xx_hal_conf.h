@@ -53,6 +53,7 @@
 //#define HAL_LPTIM_MODULE_ENABLED
 //#define HAL_LTDC_MODULE_ENABLED
 //#define HAL_MDMA_MODULE_ENABLED
+#define HAL_MMC_MODULE_ENABLED
 //#define HAL_PWR_MODULE_ENABLED
 //#define HAL_QSPI_MODULE_ENABLED
 #define HAL_RCC_MODULE_ENABLED
@@ -80,6 +81,7 @@
 //#define USE_HAL_DSI_REGISTER_CALLBACKS    0u
 //#define USE_HAL_I2C_REGISTER_CALLBACKS    0u
 //#define USE_HAL_LTDC_REGISTER_CALLBACKS   0u
+//#define  USE_HAL_MMC_REGISTER_CALLBACKS   0U /* MMC register callback disabled     */
 //#define USE_HAL_RNG_REGISTER_CALLBACKS    0u
 //#define USE_HAL_SPI_REGISTER_CALLBACKS    0u
 //#define USE_HAL_SRAM_REGISTER_CALLBACKS   0U
@@ -281,6 +283,10 @@
 #ifdef HAL_LTDC_MODULE_ENABLED
  #include "stm32mp1xx_hal_ltdc.h"
 #endif /* HAL_LTDC_MODULE_ENABLED */
+
+#ifdef HAL_MMC_MODULE_ENABLED
+ #include "stm32mp1xx_hal_mmc.h"
+#endif /* HAL_MMC_MODULE_ENABLED */
 
 #ifdef HAL_PWR_MODULE_ENABLED
  #include "stm32mp1xx_hal_pwr.h"

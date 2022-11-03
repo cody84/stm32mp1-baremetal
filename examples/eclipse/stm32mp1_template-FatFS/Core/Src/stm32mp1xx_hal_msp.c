@@ -98,6 +98,115 @@ void HAL_SD_MspDeInit(SD_HandleTypeDef* hsd)
 }
 #endif
 
+#ifdef HAL_MMC_MODULE_ENABLED
+void HAL_MMC_MspInit(MMC_HandleTypeDef* hmmc)
+{
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+  RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
+  if(hmmc->Instance==SDMMC2)
+  {
+  /** Initializes the peripherals clock
+  */
+/*    PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SDMMC;
+    PeriphClkInitStruct.SdmmcClockSelection = RCC_SDMMCCLKSOURCE_PLL;
+    if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
+    {
+      Error_Handler();
+    }
+*/
+    /* Peripheral clock enable */
+    __HAL_RCC_SDMMC2_CLK_ENABLE();
+
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+    __HAL_RCC_GPIOD_CLK_ENABLE();
+    __HAL_RCC_GPIOE_CLK_ENABLE();
+    /**SDMMC2 GPIO Configuration
+    PA8     ------> SDMMC2_D4 AF9
+    PA9     ------> SDMMC2_D5 AF10
+    PB3     ------> SDMMC2_D2 AF9
+    PB4     ------> SDMMC2_D3 AF9
+    PB14    ------> SDMMC2_D0 AF9
+    PB15    ------> SDMMC2_D1 AF9
+    PD3     ------> SDMMC2_D7 AF9
+    PE3     ------> SDMMC2_CK AF9
+    PE5     ------> SDMMC2_D6 AF9
+    PG6     ------> SDMMC2_CMD AF10
+    */
+    GPIO_InitStruct.Pin = GPIO_PIN_8;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF9_SDIO2;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = GPIO_PIN_9;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF10_SDIO2;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_14|GPIO_PIN_15;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF9_SDIO2;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = GPIO_PIN_3;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF9_SDIO2;
+    HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = GPIO_PIN_3|GPIO_PIN_5;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF9_SDIO2;
+    HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = GPIO_PIN_6;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF10_SDIO2;
+    HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
+  }
+
+}
+
+void HAL_MMC_MspDeInit(MMC_HandleTypeDef* hmmc)
+{
+  if(hmmc->Instance==SDMMC2)
+  {
+    /* Peripheral clock disable */
+    __HAL_RCC_SDMMC2_CLK_DISABLE();
+
+    /**SDMMC2 GPIO Configuration
+    PA8     ------> SDMMC2_D4 AF9
+    PA9     ------> SDMMC2_D5 AF10
+    PB3     ------> SDMMC2_D2 AF9
+    PB4     ------> SDMMC2_D3 AF9
+    PB14    ------> SDMMC2_D0 AF9
+    PB15    ------> SDMMC2_D1 AF9
+    PD3     ------> SDMMC2_D7 AF9
+    PE3     ------> SDMMC2_CK AF9
+    PE5     ------> SDMMC2_D6 AF9
+    PG6     ------> SDMMC2_CMD AF10
+    */
+    HAL_GPIO_DeInit(GPIOA, GPIO_PIN_8|GPIO_PIN_9);
+    HAL_GPIO_DeInit(GPIOB, GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_14|GPIO_PIN_15);
+    HAL_GPIO_DeInit(GPIOD, GPIO_PIN_3);
+    HAL_GPIO_DeInit(GPIOE, GPIO_PIN_3|GPIO_PIN_5);
+    HAL_GPIO_DeInit(GPIOG, GPIO_PIN_6);
+  }
+
+}
+#endif
+
 #ifdef HAL_FDCAN_MODULE_ENABLED
 void HAL_FDCAN_MspInit(FDCAN_HandleTypeDef* hfdcan)
 {

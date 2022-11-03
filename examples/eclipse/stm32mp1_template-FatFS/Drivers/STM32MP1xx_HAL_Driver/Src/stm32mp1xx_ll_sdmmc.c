@@ -11,17 +11,6 @@
   *           + Peripheral Control functions 
   *           + Peripheral State functions
   *         
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2019 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
   @verbatim
   ==============================================================================
                        ##### SDMMC peripheral features #####
@@ -148,6 +137,17 @@
   
   @endverbatim
   ******************************************************************************
+  * @attention
+  *
+  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
+  * All rights reserved.</center></h2>
+  *
+  * This software component is licensed by ST under BSD 3-Clause license,
+  * the "License"; You may not use this file except in compliance with the
+  * License. You may obtain a copy of the License at:
+  *                        opensource.org/licenses/BSD-3-Clause
+  *
+  ******************************************************************************
   */ 
 
 /* Includes ------------------------------------------------------------------*/
@@ -170,11 +170,6 @@
 /* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 static uint32_t SDMMC_GetCmdError(SDMMC_TypeDef *SDMMCx);
-static uint32_t SDMMC_GetCmdResp1(SDMMC_TypeDef *SDMMCx, uint8_t SD_CMD, uint32_t Timeout);
-static uint32_t SDMMC_GetCmdResp2(SDMMC_TypeDef *SDMMCx);
-static uint32_t SDMMC_GetCmdResp3(SDMMC_TypeDef *SDMMCx);
-static uint32_t SDMMC_GetCmdResp7(SDMMC_TypeDef *SDMMCx);
-static uint32_t SDMMC_GetCmdResp6(SDMMC_TypeDef *SDMMCx, uint8_t SD_CMD, uint16_t *pRCA);
 
 /* Exported functions --------------------------------------------------------*/
 
@@ -735,13 +730,13 @@ uint32_t SDMMC_CmdEraseEndAdd(SDMMC_TypeDef *SDMMCx, uint32_t EndAdd)
   * @param  SDMMCx: Pointer to SDMMC register base 
   * @retval HAL status
   */
-uint32_t SDMMC_CmdErase(SDMMC_TypeDef *SDMMCx)
+uint32_t SDMMC_CmdErase(SDMMC_TypeDef *SDMMCx, uint32_t EraseType)
 {
   SDMMC_CmdInitTypeDef  sdmmc_cmdinit;
   uint32_t errorstate;
   
   /* Set Block Size for Card */ 
-  sdmmc_cmdinit.Argument         = 0;
+  sdmmc_cmdinit.Argument         = EraseType;
   sdmmc_cmdinit.CmdIndex         = SDMMC_CMD_ERASE;
   sdmmc_cmdinit.Response         = SDMMC_RESPONSE_SHORT;
   sdmmc_cmdinit.WaitForInterrupt = SDMMC_WAIT_NO;
@@ -1037,6 +1032,56 @@ uint32_t SDMMC_CmdSetRelAdd(SDMMC_TypeDef *SDMMCx, uint16_t *pRCA)
 }
 
 /**
+  * @brief  Send the Set Relative Address command to MMC card (not SD card).
+  * @param  SDMMCx Pointer to SDMMC register base
+  * @param  RCA Card RCA
+  * @retval HAL status
+  */
+uint32_t SDMMC_CmdSetRelAddMmc(SDMMC_TypeDef *SDMMCx, uint16_t RCA)
+{
+  SDMMC_CmdInitTypeDef  sdmmc_cmdinit;
+  uint32_t errorstate;
+
+  /* Send CMD3 SD_CMD_SET_REL_ADDR */
+  sdmmc_cmdinit.Argument         = ((uint32_t)RCA << 16U);
+  sdmmc_cmdinit.CmdIndex         = SDMMC_CMD_SET_REL_ADDR;
+  sdmmc_cmdinit.Response         = SDMMC_RESPONSE_SHORT;
+  sdmmc_cmdinit.WaitForInterrupt = SDMMC_WAIT_NO;
+  sdmmc_cmdinit.CPSM             = SDMMC_CPSM_ENABLE;
+  (void)SDMMC_SendCommand(SDMMCx, &sdmmc_cmdinit);
+
+  /* Check for error conditions */
+  errorstate = SDMMC_GetCmdResp1(SDMMCx, SDMMC_CMD_SET_REL_ADDR, SDMMC_CMDTIMEOUT);
+
+  return errorstate;
+}
+
+/**
+  * @brief  Send the Sleep command to MMC card (not SD card).
+  * @param  SDMMCx Pointer to SDMMC register base
+  * @param  Argument Argument of the command (RCA and Sleep/Awake)
+  * @retval HAL status
+  */
+uint32_t SDMMC_CmdSleepMmc(SDMMC_TypeDef *SDMMCx, uint32_t Argument)
+{
+  SDMMC_CmdInitTypeDef  sdmmc_cmdinit;
+  uint32_t errorstate;
+
+  /* Send CMD5 SDMMC_CMD_MMC_SLEEP_AWAKE */
+  sdmmc_cmdinit.Argument         = Argument;
+  sdmmc_cmdinit.CmdIndex         = SDMMC_CMD_MMC_SLEEP_AWAKE;
+  sdmmc_cmdinit.Response         = SDMMC_RESPONSE_SHORT;
+  sdmmc_cmdinit.WaitForInterrupt = SDMMC_WAIT_NO;
+  sdmmc_cmdinit.CPSM             = SDMMC_CPSM_ENABLE;
+  (void)SDMMC_SendCommand(SDMMCx, &sdmmc_cmdinit);
+
+  /* Check for error conditions */
+  errorstate = SDMMC_GetCmdResp1(SDMMCx, SDMMC_CMD_MMC_SLEEP_AWAKE, SDMMC_CMDTIMEOUT);
+
+  return errorstate;
+}
+
+/**
   * @brief  Send the Status command and check the response.
   * @param  SDMMCx: Pointer to SDMMC register base
   * @param  Argument: Command Argument
@@ -1225,7 +1270,7 @@ static uint32_t SDMMC_GetCmdError(SDMMC_TypeDef *SDMMCx)
   * @param  SD_CMD: The sent command index  
   * @retval SD Card error state
   */
-static uint32_t SDMMC_GetCmdResp1(SDMMC_TypeDef *SDMMCx, uint8_t SD_CMD, uint32_t Timeout)
+uint32_t SDMMC_GetCmdResp1(SDMMC_TypeDef *SDMMCx, uint8_t SD_CMD, uint32_t Timeout)
 {
   uint32_t response_r1;
   
@@ -1240,7 +1285,7 @@ static uint32_t SDMMC_GetCmdResp1(SDMMC_TypeDef *SDMMCx, uint8_t SD_CMD, uint32_
       return SDMMC_ERROR_TIMEOUT;
     }
     
-  }while(!__SDMMC_GET_FLAG(SDMMCx, SDMMC_FLAG_CCRCFAIL | SDMMC_FLAG_CMDREND | SDMMC_FLAG_CTIMEOUT | SDMMC_FLAG_BUSYD0END));
+  }while(!__SDMMC_GET_FLAG(SDMMCx, SDMMC_FLAG_CCRCFAIL | SDMMC_FLAG_CMDREND | SDMMC_FLAG_CTIMEOUT));
   
   if(__SDMMC_GET_FLAG(SDMMCx, SDMMC_FLAG_CTIMEOUT))
   {
@@ -1358,7 +1403,7 @@ static uint32_t SDMMC_GetCmdResp1(SDMMC_TypeDef *SDMMCx, uint8_t SD_CMD, uint32_
   * @param  hsd: SD handle
   * @retval SD Card error state
   */
-static uint32_t SDMMC_GetCmdResp2(SDMMC_TypeDef *SDMMCx)
+uint32_t SDMMC_GetCmdResp2(SDMMC_TypeDef *SDMMCx)
 {
   /* 8 is the number of required instructions cycles for the below loop statement.
   The SDMMC_CMDTIMEOUT is expressed in ms */
@@ -1400,7 +1445,7 @@ static uint32_t SDMMC_GetCmdResp2(SDMMC_TypeDef *SDMMCx)
   * @param  hsd: SD handle
   * @retval SD Card error state
   */
-static uint32_t SDMMC_GetCmdResp3(SDMMC_TypeDef *SDMMCx)
+uint32_t SDMMC_GetCmdResp3(SDMMC_TypeDef *SDMMCx)
 {
   /* 8 is the number of required instructions cycles for the below loop statement.
   The SDMMC_CMDTIMEOUT is expressed in ms */
@@ -1438,7 +1483,7 @@ static uint32_t SDMMC_GetCmdResp3(SDMMC_TypeDef *SDMMCx)
   *         address RCA   
   * @retval SD Card error state
   */
-static uint32_t SDMMC_GetCmdResp6(SDMMC_TypeDef *SDMMCx, uint8_t SD_CMD, uint16_t *pRCA)
+uint32_t SDMMC_GetCmdResp6(SDMMC_TypeDef *SDMMCx, uint8_t SD_CMD, uint16_t *pRCA)
 {
   uint32_t response_r1;
   
@@ -1509,7 +1554,7 @@ static uint32_t SDMMC_GetCmdResp6(SDMMC_TypeDef *SDMMCx, uint8_t SD_CMD, uint16_
   * @param  hsd: SD handle
   * @retval SD Card error state
   */
-static uint32_t SDMMC_GetCmdResp7(SDMMC_TypeDef *SDMMCx)
+uint32_t SDMMC_GetCmdResp7(SDMMC_TypeDef *SDMMCx)
 {
   /* 8 is the number of required instructions cycles for the below loop statement.
   The SDMMC_CMDTIMEOUT is expressed in ms */
@@ -1566,3 +1611,5 @@ static uint32_t SDMMC_GetCmdResp7(SDMMC_TypeDef *SDMMCx)
 /**
   * @}
   */
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
